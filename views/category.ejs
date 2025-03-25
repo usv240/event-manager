@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= category %> Events</title>
+    
+    <link rel="stylesheet" href="/events.css">
+</head>
+<body>
+
+<%- include('partials/header') %>
+
+<main class="events-container">
+    <h1><%= category %> Events</h1>
+    
+    <% if (events.length === 0) { %>
+        <p>No events found under this category.</p>
+    <% } else { %>
+        <ul class="event-list">
+            <% events.forEach(event => { %>
+                <li>
+                    <a href="/events/<%= event.id %>" class="event-link">
+                        <%= event.title %>
+                    </a>
+                </li>
+            <% }); %>
+        </ul>
+    <% } %>
+</main>
+
+<%- include('partials/footer') %>
+
+</body>
+</html>

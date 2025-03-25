@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upcoming Events</title>
+    
+
+    <link rel="stylesheet" href="/events.css">
+</head>
+<body>
+
+<%- include('partials/header') %>
+
+<main class="events-container">
+    <h1>Upcoming Sports & Outdoor Events</h1>
+
+    <% 
+        let categories = {}; 
+        events.forEach(function(event) { 
+            if (!categories[event.category]) { 
+                categories[event.category] = []; 
+            }
+            categories[event.category].push(event);
+        });
+    %>
+
+    <% Object.keys(categories).forEach(category => { %>
+        <div class="event-category">
+            <a href="/events/category/<%= encodeURIComponent(category) %>" class="category-title-btn">
+                <h2 class="category-title"><%= category %></h2>
+            </a>
+            <ul class="event-list">
+                <% categories[category].forEach(function(event) { %>
+                    <li><a href="/events/<%= event.id %>" class="event-link"><%= event.title %></a></li>
+                <% }); %>
+            </ul>
+        </div>
+    <% }); %>
+    
+    
+</main>
+
+<%- include('partials/footer') %>
+
+</body>
+</html>

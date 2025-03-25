@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= event.title %></title>
+
+    
+    <link rel="stylesheet" href="/event.css">
+</head>
+<body>
+
+<%- include('partials/header') %>
+
+<main class="event-container">
+    <div class="event-details">
+        
+        <div class="event-image-container">
+            <img src="<%= event.image %>" alt="<%= event.title %>" class="event-image">
+        </div>
+
+        
+        <div class="event-info">
+            <h1><%= event.title %></h1>
+            <p><strong>Category:</strong> <%= event.category %></p>
+            <p><strong>Hosted by:</strong> <%= event.host %></p>
+            <p><strong>Date & Time:</strong> <%= event.start %> - <%= event.end %></p>
+            <p><strong>Details:</strong> <%= event.details %></p>
+        </div>
+
+        
+        <div class="event-actions">
+            <a href="/events" class="back-btn">Back to Events</a>
+            <a href="/events/edit/<%= event.id %>" class="edit-btn">Edit Event</a>
+            
+            <form action="/events/delete/<%= event.id %>?_method=DELETE" method="POST" style="display:inline;">
+                <button type="submit" class="delete-btn">Delete Event</button>
+            </form>
+            
+
+        </div>
+    </div>
+</main>
+
+<%- include('partials/footer') %>
+
+</body>
+</html>

@@ -1,0 +1,69 @@
+<%- include('partials/header') %>
+
+<main class="new-event-container">
+    <div class="form-wrapper">
+        <h1>Create a New Event</h1>
+
+        <form action="/events" method="POST" enctype="multipart/form-data">
+            
+            <div class="form-group">
+                <label for="category">Category:</label>
+                <select id="category" name="category" required onchange="toggleNewCategoryInput(this)">
+                    <option value="">Select a Category</option>
+                    <% categories.forEach(cat => { %>
+                        <option value="<%= cat %>"><%= cat %></option>
+                    <% }); %>
+                    <option value="new">Add New Category</option>
+                </select>
+                <input type="text" id="newCategory" name="newCategory" placeholder="Enter new category" style="display: none; margin-top: 10px;">
+            </div>
+
+            <div class="form-group">
+                <label for="title">Event Title:</label>
+                <input type="text" id="title" name="title" placeholder="Enter event title" required>
+            </div>
+
+            <div class="form-group">
+                <label for="details">Event Details:</label>
+                <textarea id="details" name="details" placeholder="Describe your event" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location:</label>
+                <input type="text" id="location" name="location" placeholder="Event location" required>
+            </div>
+
+            <div class="form-group">
+                <label for="start">Start Date & Time:</label>
+                <input type="datetime-local" id="start" name="start" required>
+            </div>
+
+            <div class="form-group">
+                <label for="end">End Date & Time:</label>
+                <input type="datetime-local" id="end" name="end" required>
+            </div>
+
+            <div class="form-group">
+                <label for="image">Upload Event Image:</label>
+                <input type="file" id="image" name="image" accept="image/*">
+            </div>
+
+            <button type="submit" class="btn-create">Create Event</button>
+        </form>
+    </div>
+</main>
+
+<script>
+    function toggleNewCategoryInput(selectElement) {
+        var newCategoryInput = document.getElementById("newCategory");
+        if (selectElement.value === "new") {
+            newCategoryInput.style.display = "block";
+            newCategoryInput.setAttribute("required", "required");
+        } else {
+            newCategoryInput.style.display = "none";
+            newCategoryInput.removeAttribute("required");
+        }
+    }
+</script>
+
+<%- include('partials/footer') %>
