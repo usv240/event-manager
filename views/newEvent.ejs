@@ -5,14 +5,14 @@
         <h1>Create a New Event</h1>
 
         <form action="/events" method="POST" enctype="multipart/form-data">
-            
+
             <div class="form-group">
                 <label for="category">Category:</label>
                 <select id="category" name="category" required onchange="toggleNewCategoryInput(this)">
                     <option value="">Select a Category</option>
                     <% categories.forEach(cat => { %>
                         <option value="<%= cat %>"><%= cat %></option>
-                    <% }); %>
+                    <% }) %>
                     <option value="new">Add New Category</option>
                 </select>
                 <input type="text" id="newCategory" name="newCategory" placeholder="Enter new category" style="display: none; margin-top: 10px;">
@@ -44,6 +44,11 @@
             </div>
 
             <div class="form-group">
+                <label for="host">Hosted By:</label>
+                <input type="text" id="host" name="host" placeholder="Organization or person name" required>
+            </div>
+
+            <div class="form-group">
                 <label for="image">Upload Event Image:</label>
                 <input type="file" id="image" name="image" accept="image/*">
             </div>
@@ -55,7 +60,7 @@
 
 <script>
     function toggleNewCategoryInput(selectElement) {
-        var newCategoryInput = document.getElementById("newCategory");
+        const newCategoryInput = document.getElementById("newCategory");
         if (selectElement.value === "new") {
             newCategoryInput.style.display = "block";
             newCategoryInput.setAttribute("required", "required");

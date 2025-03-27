@@ -1,12 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
+const path = require('path');
 const eventController = require('../controllers/eventController');
-const path = require('path'); 
 
-//  Define categories in this file as well
-let categories = ["Hiking & Trekking", "Water Sports", "Running Events"];
-
+// Configure multer for image uploads
 const storage = multer.diskStorage({
     destination: './public/images',
     filename: (req, file, cb) => {
@@ -15,16 +13,30 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-//  Routes
-router.get('/', eventController.listEvents);
-router.get('/new', (req, res) => res.render('newEvent', { categories })); 
-router.post('/', upload.single('image'), eventController.createEvent);
-router.get('/:id', eventController.getEventDetails);
-router.get('/edit/:id', eventController.editEventForm);
-router.put('/edit/:id', upload.single('image'), eventController.updateEvent);
-router.delete('/delete/:id', eventController.deleteEvent);
-router.get('/category/:category', eventController.filterByCategory);
-router.post('/edit/:id', upload.single('image'), eventController.updateEvent);
+// ========== Routes ==========
 
+// Show all events
+router.get('/', eventController.listEvents);
+
+// Show create form
+router.get('/new', eventController.showCreateForm);
+
+// Create new event
+router.post('/', upload.single('image'), eventController.createEvent);
+
+// Show single event
+router.get('/:id', eventController.getEventDetails);
+
+// Show edit form
+router.get('/edit/:id', eventController.editEventForm);
+
+// Update event
+router.put('/edit/:id', upload.single('image'), eventController.updateEvent);
+
+// Delete event
+router.delete('/delete/:id', eventController.deleteEvent);
+
+// Filter by category
+router.get('/category/:category', eventController.filterByCategory);
 
 module.exports = router;

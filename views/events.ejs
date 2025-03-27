@@ -4,44 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upcoming Events</title>
-    
-
     <link rel="stylesheet" href="/events.css">
 </head>
 <body>
 
-<%- include('partials/header') %>
+    <!-- Header partial -->
+    <%- include('partials/header') %>
 
-<main class="events-container">
-    <h1>Upcoming Sports & Outdoor Events</h1>
+    <main class="events-container">
+        <h1>Upcoming Sports & Outdoor Events</h1>
 
-    <% 
-        let categories = {}; 
-        events.forEach(function(event) { 
-            if (!categories[event.category]) { 
-                categories[event.category] = []; 
-            }
-            categories[event.category].push(event);
-        });
-    %>
+        <% if (events && events.length > 0) { 
+            let categories = {};
+            events.forEach(event => {
+                if (!categories[event.category]) {
+                    categories[event.category] = [];
+                }
+                categories[event.category].push(event);
+            });
+        %>
 
-    <% Object.keys(categories).forEach(category => { %>
-        <div class="event-category">
-            <a href="/events/category/<%= encodeURIComponent(category) %>" class="category-title-btn">
-                <h2 class="category-title"><%= category %></h2>
-            </a>
-            <ul class="event-list">
-                <% categories[category].forEach(function(event) { %>
-                    <li><a href="/events/<%= event.id %>" class="event-link"><%= event.title %></a></li>
-                <% }); %>
-            </ul>
-        </div>
-    <% }); %>
-    
-    
-</main>
+        <% Object.keys(categories).forEach(category => { %>
+            <div class="event-category">
+                <a href="/events/category/<%= encodeURIComponent(category) %>" class="category-title-btn">
+                    <h2 class="category-title"><%= category %></h2>
+                </a>
+                <ul class="event-list">
+                    <% categories[category].forEach(event => { %>
+                        <li>
+                            <a href="/events/<%= event._id %>" class="event-link">
+                                <%= event.title %>
+                            </a>
+                        </li>
+                    <% }) %>
+                </ul>
+            </div>
+        <% }) %>
 
-<%- include('partials/footer') %>
+        <% } else { %>
+            <p>No events found.</p>
+        <% } %>
+    </main>
+
+    <!-- Footer partial -->
+    <%- include('partials/footer') %>
 
 </body>
 </html>

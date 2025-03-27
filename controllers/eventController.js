@@ -1,98 +1,97 @@
-const events = require('../models/event');
+const Event = require('../models/event');
 
-// Define categories globally so they can be used everywhere
-let categories = ["Hiking & Trekking", "Water Sports", "Running Events"];
-
-exports.listEvents = (req, res) => {
-    res.render('events', { events });
+// List all events
+exports.listEvents = async (req, res) => {
+    try {
+        const events = await Event.find({});
+        res.render('events', { events });
+    } catch (err) {
+        console.error("Error listing events:", err);
+        res.status(500).render('error', { message: "Could not load events" });
+    }
 };
 
-exports.getEventDetails = (req, res) => {
-    const event = events.find(e => e.id == req.params.id);
-    if (event) {
+// View a single event
+exports.getEventDetails = async (req, res) => {
+    try {
+        const event = await Event.findById(req.params.id);
+        if (!event) return res.status(404).render('error', { message: "Event Not Found" });
         res.render('event', { event });
-    } else {
-        res.status(404).render('error', { message: "Event Not Found" });
+    } catch (err) {
+        console.error("Error getting event:", err);
+        res.status(500).render('error', { message: "Error retrieving event" });
+    }
+};
+
+// Show New Event Form
+exports.showCreateForm = async (req, res) => {
+    try {
+        const categories = await Event.distinct('category');
+        res.render('newEvent', { categories });
+    } catch (err) {
+        res.status(500).render('error', { message: "Failed to load form" });
     }
 };
 
 // Create New Event
-exports.createEvent = (req, res) => {
-    let { category, newCategory, title, details, location, start, end, host } = req.body;
-
-    if (category === "new" && newCategory) {
-        category = newCategory.trim();
-        if (!categories.includes(category)) {
-            categories.push(category);
-        }
-    } else if (!categories.includes(category)) {
-        categories.push(category);
+exports.createEvent = async (req, res) => {
+    try {
+        const image = req.file ? `/images/${req.file.filename}` : '/images/default.jpg';
+        await Event.create({ ...req.body, image });
+        res.redirect('/events');
+    } catch (err) {
+        console.error("Create error:", err);
+        res.status(400).render('error', { message: "Failed to create event" });
     }
-    
-
-    if (!category || !title || !details || !location || !start || !end) {
-        return res.status(400).render('error', { message: "All fields are required!" });
-    }
-    
-
-    const newEvent = {
-        id: (events.length + 1).toString(),
-        category,
-        title,
-        details,
-        location,
-        start,
-        end,
-        host,
-        image: req.file ? `/images/${req.file.filename}` : '/images/default.jpg',
-    };
-
-    events.push(newEvent);
-    res.redirect('/events');
 };
 
-// Edit Event Form
-exports.editEventForm = (req, res) => {
-    const event = events.find(e => e.id == req.params.id);
-    if (!event) {
-        return res.status(404).render('error', { message: "Event Not Found" });
-    }
-    res.render('edit', { event, categories });
-};
+// Show Edit Form
+exports.editEventForm = async (req, res) => {
+    try {
+        const event = await Event.findById(req.params.id);
+        if (!event) return res.status(404).render('error', { message: "Event Not Found" });
 
+        const categories = await Event.distinct('category');
+        res.render('edit', { event, categories });
+    } catch (err) {
+        console.error("Edit form error:", err);
+        res.status(500).render('error', { message: "Error loading edit form" });
+    }
+};
 
 // Update Event
-exports.updateEvent = (req, res) => {
-    const event = events.find(e => e.id == req.params.id);
-    if (!event) {
-        return res.status(404).render('error', { message: "Event Not Found" });
+exports.updateEvent = async (req, res) => {
+    try {
+        const updateData = { ...req.body };
+        if (req.file) updateData.image = `/images/${req.file.filename}`;
+
+        await Event.updateOne({ _id: req.params.id }, updateData);
+        res.redirect(`/events/${req.params.id}`);
+    } catch (err) {
+        console.error("Update error:", err);
+        res.status(400).render('error', { message: "Failed to update event" });
     }
-
-    event.category = req.body.category || event.category;
-    event.title = req.body.title || event.title;
-    event.details = req.body.details || event.details;
-    event.location = req.body.location || event.location;
-    event.start = req.body.start || event.start;
-    event.end = req.body.end || event.end;
-    event.host = req.body.host || event.host;
-    event.image = req.file ? `/images/${req.file.filename}` : event.image;
-
-    res.redirect(`/events/${event.id}`);
 };
 
 // Delete Event
-exports.deleteEvent = (req, res) => {
-    const eventIndex = events.findIndex(e => e.id == req.params.id);
-    if (eventIndex === -1) {
-        return res.status(404).render('error', { message: "Event Not Found" });
+exports.deleteEvent = async (req, res) => {
+    try {
+        await Event.deleteOne({ _id: req.params.id });
+        res.redirect('/events');
+    } catch (err) {
+        console.error("Delete error:", err);
+        res.status(500).render('error', { message: "Failed to delete event" });
     }
-    events.splice(eventIndex, 1);
-    res.redirect('/events');
 };
 
 // Filter Events by Category
-exports.filterByCategory = (req, res) => {
-    const category = decodeURIComponent(req.params.category).trim();
-    const filteredEvents = events.filter(event => event.category.trim() === category);
-    res.render('category', { category, events: filteredEvents });
+exports.filterByCategory = async (req, res) => {
+    try {
+        const category = decodeURIComponent(req.params.category).trim();
+        const filteredEvents = await Event.find({ category });
+        res.render('category', { category, events: filteredEvents });
+    } catch (err) {
+        console.error("Filter error:", err);
+        res.status(500).render('error', { message: "Failed to filter events" });
+    }
 };
