@@ -27,7 +27,13 @@
             <div class="event-info">
                 <h1><%= event.title %></h1>
                 <p><strong>Category:</strong> <%= event.category %></p>
-                <p><strong>Hosted by:</strong> <%= event.host %></p>
+                <p><strong>Hosted by:</strong> 
+                    <% if (event.host && typeof event.host === 'object' && event.host.firstName) { %>
+                        <%= event.host.firstName %>
+                    <% } else { %>
+                        <%= event.host %>
+                    <% } %>
+                </p>
                 <p><strong>Date & Time:</strong> 
                     <%= new Date(event.start).toLocaleString() %> - 
                     <%= new Date(event.end).toLocaleString() %>
@@ -39,11 +45,14 @@
             <!-- Action Buttons -->
             <div class="event-actions">
                 <a href="/events" class="back-btn">Back to Events</a>
-                <a href="/events/edit/<%= event._id %>" class="edit-btn">Edit Event</a>
 
-                <form action="/events/delete/<%= event._id %>?_method=DELETE" method="POST" style="display:inline;">
-                    <button type="submit" class="delete-btn">Delete Event</button>
-                </form>
+                <% if (currentUser && String(currentUser._id) === String(event.host)) { %>
+                    <a href="/events/edit/<%= event._id %>" class="edit-btn">Edit Event</a>
+
+                    <form action="/events/delete/<%= event._id %>?_method=DELETE" method="POST" style="display:inline;">
+                        <button type="submit" class="delete-btn">Delete Event</button>
+                    </form>
+                <% } %>
             </div>
         </div>
     </main>

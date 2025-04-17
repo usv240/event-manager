@@ -1,4 +1,5 @@
 const Event = require('../models/event');
+const mongoose = require('mongoose');
 
 // List all events
 exports.listEvents = async (req, res) => {
@@ -37,13 +38,30 @@ exports.showCreateForm = async (req, res) => {
 exports.createEvent = async (req, res) => {
     try {
         const image = req.file ? `/images/${req.file.filename}` : '/images/default.jpg';
-        await Event.create({ ...req.body, image });
+        const hostId = req.session.user._id;
+
+        let category = req.body.category;
+
+        // 🔧 Fix: If user selected "Add New Category", use that value
+        if (category === 'new' && req.body.newCategory) {
+            category = req.body.newCategory.trim();
+        }
+
+        await Event.create({
+            ...req.body,
+            category,      // ✅ Final resolved category
+            host: hostId,
+            image
+        });
+
+        req.flash('success', 'Event created successfully.');
         res.redirect('/events');
     } catch (err) {
         console.error("Create error:", err);
         res.status(400).render('error', { message: "Failed to create event" });
     }
 };
+
 
 // Show Edit Form
 exports.editEventForm = async (req, res) => {
@@ -66,6 +84,7 @@ exports.updateEvent = async (req, res) => {
         if (req.file) updateData.image = `/images/${req.file.filename}`;
 
         await Event.updateOne({ _id: req.params.id }, updateData);
+        req.flash('success', 'Event updated successfully.');
         res.redirect(`/events/${req.params.id}`);
     } catch (err) {
         console.error("Update error:", err);
@@ -77,6 +96,7 @@ exports.updateEvent = async (req, res) => {
 exports.deleteEvent = async (req, res) => {
     try {
         await Event.deleteOne({ _id: req.params.id });
+        req.flash('success', 'Event deleted.');
         res.redirect('/events');
     } catch (err) {
         console.error("Delete error:", err);
@@ -88,10 +108,24 @@ exports.deleteEvent = async (req, res) => {
 exports.filterByCategory = async (req, res) => {
     try {
         const category = decodeURIComponent(req.params.category).trim();
-        const filteredEvents = await Event.find({ category });
+        const filteredEvents = await Event.find({
+        category: { $regex: `^${category}$`, $options: 'i' }
+        });
         res.render('category', { category, events: filteredEvents });
     } catch (err) {
         console.error("Filter error:", err);
         res.status(500).render('error', { message: "Failed to filter events" });
+    }
+};
+
+// Show Profile Page (user's events only)
+exports.showProfile = async (req, res) => {
+    try {
+        const userId = req.session.user._id;
+        const events = await Event.find({ host: userId });
+        res.render('user/profile', { events });
+    } catch (err) {
+        console.error("Profile error:", err);
+        res.status(500).render('error', { message: "Could not load profile" });
     }
 };

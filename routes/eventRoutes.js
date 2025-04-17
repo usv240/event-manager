@@ -3,6 +3,9 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const eventController = require('../controllers/eventController');
+const isLoggedIn = require('../middleware/isLoggedIn');
+const isAuthor = require('../middleware/isAuthor');
+const validateId = require('../middleware/validateId');
 
 // Configure multer for image uploads
 const storage = multer.diskStorage({
@@ -19,22 +22,22 @@ const upload = multer({ storage });
 router.get('/', eventController.listEvents);
 
 // Show create form
-router.get('/new', eventController.showCreateForm);
+router.get('/new', isLoggedIn, eventController.showCreateForm);
 
 // Create new event
-router.post('/', upload.single('image'), eventController.createEvent);
+router.post('/', isLoggedIn, upload.single('image'), eventController.createEvent);
 
 // Show single event
-router.get('/:id', eventController.getEventDetails);
+router.get('/:id', validateId, eventController.getEventDetails);
 
 // Show edit form
-router.get('/edit/:id', eventController.editEventForm);
+router.get('/edit/:id', validateId, isLoggedIn, isAuthor, eventController.editEventForm);
 
 // Update event
-router.put('/edit/:id', upload.single('image'), eventController.updateEvent);
+router.put('/edit/:id', validateId, isLoggedIn, isAuthor, upload.single('image'), eventController.updateEvent);
 
 // Delete event
-router.delete('/delete/:id', eventController.deleteEvent);
+router.delete('/delete/:id', validateId, isLoggedIn, isAuthor, eventController.deleteEvent);
 
 // Filter by category
 router.get('/category/:category', eventController.filterByCategory);
