@@ -23,15 +23,28 @@
           <div class="actions">
             <a href="/events/edit/<%= event._id %>" class="btn-edit">Edit</a>
 
-                <form action="/events/delete/<%= event._id %>?_method=DELETE" method="POST" style="display:inline;">
-                <button type="submit" class="btn-delete">Delete</button>
-                </form>
+            <form action="/events/delete/<%= event._id %>?_method=DELETE" method="POST" style="display:inline;">
+              <button type="submit" class="btn-delete">Delete</button>
+            </form>
 
           </div>
         </div>
       <% }) %>
     </div>
   <% } %>
+
+  <!-- RSVP Section -->
+  <div class="rsvp-section">
+    <h3>Your RSVPs:</h3>
+    <ul class="rsvp-list">
+      <% rsvps.forEach(rsvp => { %>
+        <li class="rsvp-card">
+          <a href="/events/<%= rsvp.event._id %>"><%= rsvp.event.title %></a>
+          <span class="rsvp-status <%= rsvp.status.toLowerCase() %>"><%= rsvp.status %></span>
+        </li>
+      <% }) %>
+    </ul>
+  </div>  
 </div>
 
 <style>
@@ -113,6 +126,83 @@
   .btn-delete:hover {
     background-color: #c82333;
   }
+
+  .rsvp-container {
+    margin-top: 40px;
+  }
+
+  .rsvp-list {
+    list-style: disc;
+    padding-left: 20px;
+  }
+
+  .rsvp-list li {
+    margin-bottom: 8px;
+  }
+  .profile-container h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.rsvp-section {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #ccc;
+}
+
+.rsvp-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-left: 0;
+  list-style: none;
+  margin-top: 10px;
+}
+
+.rsvp-card {
+  background-color: #fff;
+  padding: 12px 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rsvp-status {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.rsvp-status.yes {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.rsvp-status.no {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.rsvp-status.maybe {
+  background-color: #fff3cd;
+  color: #856404;
+}
+.rsvp-card:hover {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  transform: translateY(-1px);
+  transition: all 0.2s ease;
+}
+.rsvp-status {
+  transition: transform 0.2s ease;
+}
+
+.rsvp-status:hover {
+  transform: scale(1.05);
+}
+
 </style>
 
 <%- include('../partials/footer') %>

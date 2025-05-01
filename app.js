@@ -44,11 +44,13 @@ app.set('views', path.join(__dirname, 'views'));
 // Routes
 const eventRoutes = require('./routes/eventRoutes');
 const mainRoutes = require('./routes/mainRoutes');
-const userRoutes = require('./routes/userRoutes'); // <-- Added
+const userRoutes = require('./routes/userRoutes');
+const rsvpRoutes = require('./routes/rsvpRoutes'); 
 
 app.use('/', mainRoutes);
 app.use('/events', eventRoutes);
-app.use('/users', userRoutes); // <-- Added
+app.use('/users', userRoutes);
+app.use('/', rsvpRoutes); 
 
 // 404 - Not Found
 app.use((req, res) => {
@@ -63,12 +65,23 @@ app.use((err, req, res, next) => {
     return res.status(400).render('error', { message: "Invalid Event ID format" });
   }
 
+  if (err.status === 401) {
+    return res.status(401).render('error', { message: "Unauthorized (401)" });
+  }
+
+  if (err.status === 429) {
+    return res.status(429).render('error', { message: "Too Many Requests (429)" });
+  }
+
   if (err.name === 'ValidationError') {
     return res.status(400).render('error', { message: "Validation failed. Please check your input fields." });
   }
 
   res.status(500).render('error', { message: "Internal Server Error" });
 });
+
+// Log environment
+console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 
 // Start server
 const PORT = process.env.PORT || 3000;

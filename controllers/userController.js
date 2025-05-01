@@ -1,6 +1,7 @@
 const { validationResult } = require('express-validator');
 const User = require('../models/user');
 const Event = require('../models/event');
+const Rsvp = require('../models/rsvp');
 
 // Show signup form
 exports.renderSignupForm = (req, res) => {
@@ -92,9 +93,13 @@ exports.showProfile = async (req, res) => {
   try {
     const userId = req.session.user._id;
     const events = await Event.find({ host: userId });
+    const allRsvps = await Rsvp.find({ user: userId }).populate('event');
+    const rsvps = allRsvps.filter(r => r.event !== null);
+
 
     res.render('user/profile', {
       events,
+      rsvps,
       messages: req.flash()
     });
   } catch (err) {
@@ -102,3 +107,4 @@ exports.showProfile = async (req, res) => {
     res.status(500).render('error', { message: "Failed to load profile." });
   }
 };
+

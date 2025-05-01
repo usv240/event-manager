@@ -6,6 +6,7 @@ const eventController = require('../controllers/eventController');
 const isLoggedIn = require('../middleware/isLoggedIn');
 const isAuthor = require('../middleware/isAuthor');
 const validateId = require('../middleware/validateId');
+const validateEvent = require('../middleware/validateEvent');
 
 // Configure multer for image uploads
 const storage = multer.diskStorage({
@@ -25,7 +26,7 @@ router.get('/', eventController.listEvents);
 router.get('/new', isLoggedIn, eventController.showCreateForm);
 
 // Create new event
-router.post('/', isLoggedIn, upload.single('image'), eventController.createEvent);
+router.post('/', isLoggedIn, upload.single('image'), validateEvent, eventController.createEvent);
 
 // Show single event
 router.get('/:id', validateId, eventController.getEventDetails);
@@ -34,7 +35,7 @@ router.get('/:id', validateId, eventController.getEventDetails);
 router.get('/edit/:id', validateId, isLoggedIn, isAuthor, eventController.editEventForm);
 
 // Update event
-router.put('/edit/:id', validateId, isLoggedIn, isAuthor, upload.single('image'), eventController.updateEvent);
+router.put('/edit/:id', validateId, isLoggedIn, isAuthor, upload.single('image'), validateEvent, eventController.updateEvent);
 
 // Delete event
 router.delete('/delete/:id', validateId, isLoggedIn, isAuthor, eventController.deleteEvent);

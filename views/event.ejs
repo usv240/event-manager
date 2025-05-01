@@ -40,20 +40,40 @@
                 </p>
                 <p><strong>Location:</strong> <%= event.location %></p>
                 <p><strong>Details:</strong> <%= event.details %></p>
+                
+                <!-- RSVP Breakdown -->
+                <% if (typeof yesCount !== 'undefined' && typeof noCount !== 'undefined' && typeof maybeCount !== 'undefined') { %>
+                    <p><strong>RSVPs:</strong> 
+                        YES: <%= yesCount %>, 
+                        NO: <%= noCount %>, 
+                        MAYBE: <%= maybeCount %>
+                    </p>
+                <% } %>
             </div>
 
             <!-- Action Buttons -->
-            <div class="event-actions">
+            <div class="event-actions" style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 20px;">
                 <a href="/events" class="back-btn">Back to Events</a>
 
                 <% if (currentUser && String(currentUser._id) === String(event.host)) { %>
-                    <a href="/events/edit/<%= event._id %>" class="edit-btn">Edit Event</a>
+                    <div style="display: flex; gap: 10px;">
+                        <a href="/events/edit/<%= event._id %>" class="edit-btn">Edit Event</a>
 
-                    <form action="/events/delete/<%= event._id %>?_method=DELETE" method="POST" style="display:inline;">
-                        <button type="submit" class="delete-btn">Delete Event</button>
+                        <form action="/events/delete/<%= event._id %>?_method=DELETE" method="POST" style="display:inline;">
+                            <button type="submit" class="delete-btn">Delete Event</button>
+                        </form>
+                    </div>
+                <% } %>
+
+                <% if (currentUser && String(currentUser._id) !== String(event.host)) { %>
+                    <form action="/events/<%= event._id %>/rsvp" method="POST" style="display: flex; gap: 10px;">
+                        <button type="submit" name="status" value="YES" class="rsvp-btn yes">Yes</button>
+                        <button type="submit" name="status" value="NO" class="rsvp-btn no">No</button>
+                        <button type="submit" name="status" value="MAYBE" class="rsvp-btn maybe">Maybe</button>
                     </form>
                 <% } %>
             </div>
+
         </div>
     </main>
 

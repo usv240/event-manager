@@ -1,4 +1,3 @@
-
 .event-container {
     max-width: 800px;
     margin: 40px auto;
@@ -8,7 +7,6 @@
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
-
 
 .event-image-container {
     text-align: center;
@@ -21,7 +19,6 @@
     border-radius: 10px;
 }
 
-
 .event-info {
     text-align: left;
     margin-top: 20px;
@@ -32,14 +29,22 @@
     margin-bottom: 10px;
 }
 
-
+/* Replace the old one with this */
 .event-actions {
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
     margin-top: 20px;
-}
+  }
+  
+  
 
-.back-btn, .edit-btn, .delete-btn {
+/* Unified button styles */
+.back-btn,
+.edit-btn,
+.delete-btn {
     padding: 10px 15px;
     font-size: 16px;
     border: none;
@@ -48,9 +53,23 @@
     border-radius: 5px;
 }
 
+/* Individual button colors */
 .back-btn {
+    display: inline-block;
+    padding: 6px 14px;
+    font-size: 0.9em;
+    font-weight: 500;
     background-color: #007bff;
     color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    border: none;
+    margin-bottom: 16px;
+    transition: background-color 0.2s ease;
+}
+
+.back-btn:hover {
+    background-color: #0056b3;
 }
 
 .edit-btn {
@@ -81,3 +100,46 @@
     margin-top: 20px;
 }
 
+/* RSVP Buttons */
+.rsvp-btn {
+    padding: 8px 16px;
+    font-size: 0.9em;
+    border: none;
+    border-radius: 5px;
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+.rsvp-btn.yes {
+    background-color: #28a745;
+    color: white;
+}
+
+.rsvp-btn.no {
+    background-color: #dc3545;
+    color: white;
+}
+
+.rsvp-btn.maybe {
+    background-color: #ffc107;
+    color: black;
+}
+
+.back-btn {
+    display: inline-block;
+    padding: 5px 12px;
+    font-size: 0.8em;
+    font-weight: 500;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    border: none;
+    margin-bottom: 16px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .back-btn:hover {
+    background-color: #0056b3;
+  }
+  

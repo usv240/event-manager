@@ -13,16 +13,26 @@ exports.listEvents = async (req, res) => {
 };
 
 // View a single event
+const Rsvp = require('../models/rsvp'); 
+
 exports.getEventDetails = async (req, res) => {
     try {
         const event = await Event.findById(req.params.id);
         if (!event) return res.status(404).render('error', { message: "Event Not Found" });
-        res.render('event', { event });
+
+        // ✅ Count number of YES RSVPs
+        const yesCount = await Rsvp.countDocuments({ event: event._id, status: 'YES' });
+        const noCount = await Rsvp.countDocuments({ event: event._id, status: 'NO' });
+        const maybeCount = await Rsvp.countDocuments({ event: event._id, status: 'MAYBE' });
+
+        res.render('event', { event, yesCount, noCount, maybeCount });
+
     } catch (err) {
         console.error("Error getting event:", err);
         res.status(500).render('error', { message: "Error retrieving event" });
     }
 };
+
 
 // Show New Event Form
 exports.showCreateForm = async (req, res) => {
@@ -42,14 +52,13 @@ exports.createEvent = async (req, res) => {
 
         let category = req.body.category;
 
-        // 🔧 Fix: If user selected "Add New Category", use that value
         if (category === 'new' && req.body.newCategory) {
             category = req.body.newCategory.trim();
         }
 
         await Event.create({
             ...req.body,
-            category,      // ✅ Final resolved category
+            category,      
             host: hostId,
             image
         });
@@ -95,14 +104,19 @@ exports.updateEvent = async (req, res) => {
 // Delete Event
 exports.deleteEvent = async (req, res) => {
     try {
-        await Event.deleteOne({ _id: req.params.id });
-        req.flash('success', 'Event deleted.');
-        res.redirect('/events');
+      await Event.deleteOne({ _id: req.params.id });
+  
+      const Rsvp = require('../models/rsvp');
+      await Rsvp.deleteMany({ event: req.params.id });
+  
+      req.flash('success', 'Event deleted.');
+      res.redirect('/events');
     } catch (err) {
-        console.error("Delete error:", err);
-        res.status(500).render('error', { message: "Failed to delete event" });
+      console.error("Delete error:", err);
+      res.status(500).render('error', { message: "Failed to delete event" });
     }
-};
+  };
+  
 
 // Filter Events by Category
 exports.filterByCategory = async (req, res) => {

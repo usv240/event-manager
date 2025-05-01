@@ -9,7 +9,7 @@ module.exports = async function (req, res, next) {
       return res.redirect('/');
     }
 
-    // ✅ Proper ObjectId comparison
+    // Proper ObjectId comparison
     if (!event.host.equals(req.session.user._id)) {
       req.flash('error', 'You are not authorized to do that.');
       return res.status(403).render('error', { message: 'Unauthorized access (403)' });
